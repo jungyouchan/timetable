@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./login.js" defer></script>
+    <link href="./login.css" rel="stylesheet">
+    <title>login</title>
+</head>
+<body>
+    <header>
+        <div class="head"></div> <!--to chatting page-->
+    </header>
+    
+    <div class="bigArea">
+        <h2 class="signUpText miniTitle animation">Sign Up</h2>
+        <h2 class="loginText miniTitle">LogIn</h2>
+        <div class="formArea">
+            <form>
+                <div class="inputValue">
+                    <input id="inputId" required  oninvalid="this.setCustomValidity('이름을 입력해 주세요')" oninput="this.setCustomValidity('')" autocomplete="off">
+                    <label>Name</label>
+                    <span></span>
+                </div> 
+                <div class="inputValue">
+                    <input id="inputPassword" required  oninvalid="this.setCustomValidity('비밀번호를 입력해 주세요')" oninput="this.setCustomValidity('')" autocomplete="off">
+                    <label>Password</label>
+                    <span></span>
+                </div>
+                <button class="loginButton formButton" type="submit" onsubmit="submit({'type' : 'login'})">로그인</button>
+                <button class ="formButton" onclick="changeForm({'type': 'login'})" type="button">회원가입하러 가기</button>
+            </form>
+        </div>
+
+    </div>
+
+                
+</body>
+</html>
