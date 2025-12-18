@@ -1,0 +1,20 @@
+{
+  "name": "timetable-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "NODE_ENV=production node src/index.js",
+    "start:dev": "node src/index.js",
+    "build": "echo 'No build needed for server'"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.88.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

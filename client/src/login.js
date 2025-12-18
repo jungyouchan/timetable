@@ -1,4 +1,4 @@
-import './login.css';
+import './styles/login.css';
 console.log("Login page loaded");
 
 function changeForm(type) {
