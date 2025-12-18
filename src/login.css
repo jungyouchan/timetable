@@ -7,8 +7,6 @@ body {
     margin: 0;
 }
 
-
-
 header {
     width: 100vw;
     height: 10vh;
@@ -106,9 +104,6 @@ input:focus ~ span, input:valid ~ span {
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-
-
-
 form {
     width: 100%;
     height: 100%;
@@ -118,8 +113,6 @@ form {
     flex-direction: column;
     justify-content: space-around;
 }
-
-
 
 .bigArea {
     position: absolute;
@@ -173,7 +166,6 @@ form {
     height: 15%;
 }
 
-
 button {
     width: 17vw;
     height: 7vh;
@@ -186,5 +178,3 @@ button {
 button:active, button:hover {
     background-color: rgb(174, 174, 174);
 }
-
-
