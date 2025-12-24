@@ -17,7 +17,7 @@ const __filename = fileURLToPath(
 const __dirname = path.dirname(__filename);
 
 // 🔹 Vite build 결과 경로
-const clientDistPath = path.join(__dirname, '../../client/dist');
+const clientDistPath = path.join(__dirname, '../client/dist');
 
 
 app.use(express.static(clientDistPath));
