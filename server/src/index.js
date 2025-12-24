@@ -7,7 +7,10 @@ import { randomUUID } from "crypto";
 import argon2 from 'argon2';
 import { createClient } from '@supabase/supabase-js';
 
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config({ path: '../../.env' });
+}
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,7 +20,7 @@ const __filename = fileURLToPath(
 const __dirname = path.dirname(__filename);
 
 // 🔹 Vite build 결과 경로
-const clientDistPath = path.join(__dirname, '../client/dist');
+const clientDistPath = path.join(__dirname, '../../client/dist');
 
 
 app.use(express.static(clientDistPath));
