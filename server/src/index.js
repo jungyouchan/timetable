@@ -1,17 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { randomUUID } from "crypto";
+import argon2 from 'argon2';
 import { createClient } from '@supabase/supabase-js';
 
-dotenv.config();
+dotenv.config({ path: '../.env' });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -20,201 +17,71 @@ const supabase = createClient(
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// 프로덕션: 정적 파일 서빙
-if (process.env.NODE_ENV === 'production') {
-  const clientDistPath = path.join(__dirname, '../../client/dist');
-  app.use(express.static(clientDistPath));
-  console.log(`��� Serving static files from: ${clientDistPath}`);
-}
+app.post('/api/login', async (req, res) => {
+  const { name, password } = req.body;
+  //DB에서 확인
+})
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    message: 'Server is running',
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
-// 인증 API
-app.post('/api/auth/signup', async (req, res) => {
+app.post('/api/signup', async (req, res) => {
+  console.log(req.body);
+  const { name, password, role } = req.body;
+  let userId;
+  //DB에 저장
+  
   try {
-    const { email, password } = req.body;
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
-    res.json({ success: true, data });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
+    userId = randomUUID();
+    const hashedPassword = await argon2.hash(password, {
+      type: argon2.argon2id,
+      timeCost: 4,
+      memoryCost: 131072,
+      parallelism: 1,
+    });
+
+    // users 테이블
+    const { error: userError } = await supabase
+      .from("users")
+      .insert({
+        id: userId,
+        role,
+        name,
+        password_hash: hashedPassword,
+      });
+
+    if (userError) throw userError;
+
+    // 역할별 테이블
+    if (role === "student") {
+      const { error } = await supabase
+        .from("students")
+        .insert({ id: userId });
+      if (error) throw error;
+    }
+
+    if (role === "teacher") {
+      const { error } = await supabase
+        .from("teachers")
+        .insert({ id: userId });
+      if (error) throw error;
+    }
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error('Signup error:', err);
+    if (userId) {
+      await supabase.from(`${role}s`).delete().eq("id", userId);
+      await supabase.from("users").delete().eq("id", userId);
+    }
+    return res.status(500).json({
+      success: false,
+      message: '회원가입 중 서버 오류가 발생했습니다.'
+    });
   }
-});
 
-app.post('/api/auth/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    res.json({ success: true, data });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
+})
 
-app.post('/api/auth/logout', async (req, res) => {
-  try {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    res.json({ success: true });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-// 시간표 API
-app.get('/api/timetables', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ success: false, error: 'Unauthorized' });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError) throw authError;
-
-    const { data, error } = await supabase.from('timetables').select('*').eq('user_id', user.id);
-    if (error) throw error;
-    res.json({ success: true, data });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-app.post('/api/timetables', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ success: false, error: 'Unauthorized' });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError) throw authError;
-
-    const timetableData = { ...req.body, user_id: user.id };
-    const { data, error } = await supabase.from('timetables').insert([timetableData]).select();
-    if (error) throw error;
-    res.json({ success: true, data });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-app.put('/api/timetables/:id', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ success: false, error: 'Unauthorized' });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError) throw authError;
-
-    const { id } = req.params;
-    const { data, error } = await supabase.from('timetables').update(req.body).eq('id', id).eq('user_id', user.id).select();
-    if (error) throw error;
-    res.json({ success: true, data });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-app.delete('/api/timetables/:id', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ success: false, error: 'Unauthorized' });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError) throw authError;
-
-    const { id } = req.params;
-    const { error } = await supabase.from('timetables').delete().eq('id', id).eq('user_id', user.id);
-    if (error) throw error;
-    res.json({ success: true });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-// 일정 API
-app.get('/api/schedules', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ success: false, error: 'Unauthorized' });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError) throw authError;
-
-    const { data, error } = await supabase.from('schedules').select('*').eq('user_id', user.id);
-    if (error) throw error;
-    res.json({ success: true, data });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-app.post('/api/schedules', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ success: false, error: 'Unauthorized' });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError) throw authError;
-
-    const scheduleData = { ...req.body, user_id: user.id };
-    const { data, error } = await supabase.from('schedules').insert([scheduleData]).select();
-    if (error) throw error;
-    res.json({ success: true, data });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-app.put('/api/schedules/:id', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ success: false, error: 'Unauthorized' });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError) throw authError;
-
-    const { id } = req.params;
-    const { data, error } = await supabase.from('schedules').update(req.body).eq('id', id).eq('user_id', user.id).select();
-    if (error) throw error;
-    res.json({ success: true, data });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-app.delete('/api/schedules/:id', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ success: false, error: 'Unauthorized' });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError) throw authError;
-
-    const { id } = req.params;
-    const { error } = await supabase.from('schedules').delete().eq('id', id).eq('user_id', user.id);
-    if (error) throw error;
-    res.json({ success: true });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-// 프로덕션: SPA 라우팅
-if (process.env.NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
-  });
-}
 
 app.listen(PORT, () => {
-  console.log(`��� Server running on http://localhost:${PORT}`);
-  console.log(`��� API available at http://localhost:${PORT}/api`);
-  console.log(`��� Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

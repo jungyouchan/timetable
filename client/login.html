@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/feather-icons"></script>
     <title>login</title>
 </head>
 <body>
@@ -16,14 +17,17 @@
         <div class="formArea">
             <form>
                 <div class="inputValue">
-                    <input id="inputId" required  oninvalid="this.setCustomValidity('이름을 입력해 주세요')" oninput="this.setCustomValidity('')" autocomplete="off">
+                    <input id="inputId" name="name" required  oninvalid="this.setCustomValidity('이름을 입력해 주세요')" oninput="this.setCustomValidity('')" autocomplete="off">
                     <label>Name</label>
                     <span></span>
                 </div>
                 <div class="inputValue">
-                    <input id="inputPassword" required  oninvalid="this.setCustomValidity('비밀번호를 입력해 주세요')" oninput="this.setCustomValidity('')" autocomplete="off">
+                    <input id="inputPassword" type="password" placeholder=" " name="password" required  oninvalid="this.setCustomValidity('비밀번호를 입력해 주세요')" oninput="this.setCustomValidity('')" autocomplete="off">
                     <label>Password</label>
                     <span></span>
+                    <button type="button" class="eyeButton">
+                        <img class="eyeIcon" src="./src/img/closedeye.png">
+                    </button>
                 </div>
                 <button class="loginButton formButton" type="submit" data-action="submit-login">로그인</button>
                 <button class ="formButton" type="button" data-action="toggle-signup">회원가입하러 가기</button>
