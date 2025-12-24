@@ -9,6 +9,9 @@ import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
 
+const app = express();
+const PORT = process.env.PORT || 5000;
+
 const __filename = fileURLToPath(
     import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,13 +19,8 @@ const __dirname = path.dirname(__filename);
 // 🔹 Vite build 결과 경로
 const clientDistPath = path.join(__dirname, '../../client/dist');
 
-// 🔹 정적 파일 서빙
+
 app.use(express.static(clientDistPath));
-
-
-const app = express();
-const PORT = process.env.PORT || 5000;
-
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_ANON_KEY
