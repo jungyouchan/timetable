@@ -1,11 +1,23 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { randomUUID } from "crypto";
 import argon2 from 'argon2';
 import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(
+    import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// 🔹 Vite build 결과 경로
+const clientDistPath = path.join(__dirname, '../../client/dist');
+
+// 🔹 정적 파일 서빙
+app.use(express.static(clientDistPath));
 
 
 const app = express();
@@ -81,6 +93,11 @@ app.post('/api/signup', async(req, res) => {
     }
 
 })
+
+// 🔹 API 말고 나머지는 index.html로
+app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+});
 
 
 app.listen(PORT, () => {
