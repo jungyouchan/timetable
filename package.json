@@ -1,24 +1,24 @@
 {
-  "name": "timetable-monorepo",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
-    "server:dev": "cd server && npm run dev",
-    "client:dev": "cd client && npm run dev",
-    "build": "npm run client:build && npm run server:build",
-    "client:build": "cd client && npm run build",
-    "server:build": "cd server && npm run build",
-    "start": "cd server && npm start",
-    "start:dev": "cd server && npm run start:dev",
-    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
-    "heroku-postbuild": "npm run install:all && npm run build"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  },
-  "dependencies": {
-    "crypto": "^1.0.1"
-  }
+    "name": "timetable-monorepo",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+        "server:dev": "cd server && npm run dev",
+        "client:dev": "cd client && npm run dev",
+        "build": "npm run client:build && npm run server:build",
+        "client:build": "cd client && npm run build",
+        "server:build": "cd server && npm run build",
+        "start": "cd server && npm start",
+        "start:dev": "cd server && npm run start:dev",
+        "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+        "heroku-postbuild": "npm run install:all && npm run build"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    },
+    "dependencies": {
+        "crypto": "^1.0.1"
+    }
 }
