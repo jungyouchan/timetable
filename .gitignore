@@ -13,7 +13,6 @@ server/node_modules/
 # Build outputs
 client/dist/
 server/dist/
-dist/
 
 # Logs
 *.log
