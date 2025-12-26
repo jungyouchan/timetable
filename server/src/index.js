@@ -23,7 +23,6 @@ const __dirname = path.dirname(__filename);
 const clientDistPath = path.join(__dirname, '../../client/dist');
 
 
-app.use(express.static(clientDistPath));
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_ANON_KEY
@@ -94,6 +93,8 @@ app.post('/api/signup', async(req, res) => {
     }
 
 })
+
+app.use(express.static(clientDistPath));
 
 // 🔹 API 말고 나머지는 index.html로
 app.get('*', (req, res) => {
