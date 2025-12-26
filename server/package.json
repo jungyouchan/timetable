@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "start": "NODE_ENV=production npm start --omit=dev",
+    "start": "NODE_ENV=production node src/index.js",
     "start:dev": "node src/index.js",
     "build": "echo 'No build needed for server'"
   },
