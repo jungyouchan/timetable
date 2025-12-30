@@ -27,18 +27,13 @@ const PORT = process.env.PORT || 5000;
 // 🔹 Vite build 결과 경로
 const clientDistPath = path.join(__dirname, '../../client/dist');
 
-console.log('ENV CHECK:', {
+console.log("ENV CHECK", {
   url: !!process.env.SUPABASE_URL,
-  keyType: typeof process.env.SUPABASE_SERVICE_ROLE_KEY,
-  keyLength: process.env.SUPABASE_SERVICE_ROLE_KEY?.length,
+  anon: !!process.env.SUPABASE_ANON_KEY,
+  service: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+  length: process.env.SUPABASE_SERVICE_ROLE_KEY?.length
 });
 
-console.log("RAW ENV", {
-  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-  keys: Object.keys(process.env).filter(k =>
-    k.includes("SUPABASE")
-  )
-});
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
