@@ -1,13 +1,15 @@
-import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({
-    path: path.resolve(__dirname, '../../.env')
-});
+if (process.env.NODE_ENV !== 'production') {
+    const dotenv = await import("dotenv");
+    dotenv.config({
+        path: path.resolve(__dirname, '../../.env')
+    });
+}
 
 import express from 'express';
 import cors from 'cors';
@@ -29,6 +31,13 @@ console.log('ENV CHECK:', {
   url: !!process.env.SUPABASE_URL,
   keyType: typeof process.env.SUPABASE_SERVICE_ROLE_KEY,
   keyLength: process.env.SUPABASE_SERVICE_ROLE_KEY?.length,
+});
+
+console.log("RAW ENV", {
+  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  keys: Object.keys(process.env).filter(k =>
+    k.includes("SUPABASE")
+  )
 });
 
 const supabase = createClient(
