@@ -31,13 +31,13 @@ console.log("ENV CHECK", {
   url: !!process.env.SUPABASE_URL,
   anon: !!process.env.SUPABASE_ANON_KEY,
   service: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-  length: process.env.SUPABASE_SERVICE_ROLE_KEY?.length
+  length: process.env.SUPABASE_ANON_KEY?.length
 });
 
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.SUPABASE_ANON_KEY
 );
 
 app.use(cors());
